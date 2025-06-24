@@ -1,8 +1,24 @@
 ## Project Structure: 
 
 ```text
-uformer-fastapi-hub - Copy/
+uformer-hub-service/
 ├── backend/
+│   ├── debug_logs/
+│   │   ├── 2025-06-24_09-24-41/ (elements ignored)
+│   │   ├── debug_keys_denoise_16.txt
+│   │   └── debug_keys_denoise_b.txt
+│   ├── model_weights/
+│   │   └── official_pretrained/
+│   │       ├── uformer16_denoising_sidd.pth
+│   │       ├── Uformer_B_GoPro.pth
+│   │       └── Uformer_B_SIDD.pth
+│   ├── temp/
+│   │   └── images/
+│   │       └── denoise/
+│   │           ├── developed_inputs/ (elements ignored)
+│   │           ├── processed/ (elements ignored)
+│   │           └── uploads/ (elements ignored)
+│   ├── .env
 │   └── .env.example
 ├── documentation/
 │   ├── assets/ (elements ignored)
