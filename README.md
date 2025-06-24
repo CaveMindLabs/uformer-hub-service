@@ -46,8 +46,11 @@ This project solves these problems by re-engineering the Uformer pipeline into a
 For more details on the architecture and API, please see the `documentation/` directory.
 
 ---
+---
+---
+## Setup & Installation
 
-## Quick Start (Docker)
+You can set up and run this project using two methods: an all-in-one automated script or a step-by-step manual process.
 
 ### Prerequisites
 *   **NVIDIA GPU:** The backend service requires an NVIDIA GPU for PyTorch (CUDA) model inference.
@@ -55,62 +58,93 @@ For more details on the architecture and API, please see the `documentation/` di
 *   **NVIDIA Container Toolkit:** You must install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to allow Docker to access the GPU.
 *   **Note for macOS Users:** Due to the dependency on NVIDIA CUDA, the backend container cannot be run on macOS. The frontend can be run, but it will not be able to connect to a local backend.
 
-### 1. Clone This Repository
-```bash
-git clone https://github.com/CaveMindLabs/uformer-hub-service.git
-cd uformer-hub-service
-```
+### Option 1: Automated Setup (Recommended)
+This is the fastest way to get started. These scripts will create the necessary directories, download the model weights, set up the environment file, and launch the application.
 
-### 2. Create Directories & Download Models
+1.  **Clone This Repository:**
+    ```bash
+    git clone https://github.com/CaveMindLabs/uformer-hub-service.git
+    cd uformer-hub-service
+    ```
 
-First, create all the necessary directories for models, logs, and temporary files with a single command:
-```bash
-mkdir -p backend/model_weights/official_pretrained backend/temp backend/debug_logs
-```
+2.  **Run the Setup Script:**
 
-These directories are mounted as volumes into the Docker containers.
-```bash
-uformer-hub-service/
-└── backend/
-    ├── model_weights/     # For storing the downloaded .pth model files
-    ├── temp/              # For storing uploaded/processed images and videos
-    └── debug_logs/        # For storing application logs
-```
+    **For Linux and macOS:**
+    ```bash
+    # Make the script executable
+    chmod +x setup.sh
 
-Next, download the following 3 `models` and place them inside the newly created `backend/model_weights/official_pretrained/` directory. Each model is optimized for a specific task based on its training data.
+    # Run the script
+    ./setup.sh
+    ```
 
----
-| Model / Task                  | File Size | Training Dataset & Best Use Case                                                                                                    | Download                                                                                                                              |
-| ----------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Denoising (High Quality)**  | 584 MB    | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> Best for general-purpose denoising of sRGB images from digital cameras. | [Uformer_B_SIDD.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/Uformer_B_SIDD.pth?download=true) |
-| **Denoising (Fast)**          | 61 MB     | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> A lighter version for faster performance, ideal for real-time use.      | [uformer16_denoising_sidd.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/uformer16_denoising_sidd.pth?download=true)                                       |
-| **Motion Deblurring**         | 584 MB    | **[GoPro](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EqKY3WMkbfVBlzldiEe4IEUBgr6BQx8mkI9jipWoWrwqQg?e=c5aPIe)** <br/> Best for correcting blur caused by camera shake or fast motion.    | [Uformer_B_GoPro.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/Uformer_B_GoPro.pth?download=true)      |
+    **For Windows (in PowerShell):**
+    ```powershell
+    # You may need to update your execution policy to run local scripts.
+    # This permission is temporary until you close the PowerShell tab.
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
----
-*__Note:__ Check the original `README.md`, [UFORMER_ORIGINAL_README.md](UFORMER_ORIGINAL_README.md)*, for more datasets
+    # Run the script
+    ./setup.ps1
+    ```
 
----
-### 3. Configure Environment
-Copy the example environment file. The default settings are configured for on-demand model loading.
+After the script finishes, your application will be running.  
+You can now jump to the [Accessing the Application](#accessing-the-application) section.
 
-```bash
-cp backend/.env.example backend/.env
-```
+### Option 2: Manual Setup
+Follow these steps if you prefer to set up the project manually.
 
-### 4. Run the Application
-Use Docker Compose to build and start all services. Run from the root directory of the project where the `docker-compose.yml` file is located.
+1.  **Clone This Repository:**  
+    ```bash
+    git clone https://github.com/CaveMindLabs/uformer-hub-service.git
+    cd uformer-hub-service
+    ```
+2.  **Create Directories:**  
+    Create all the necessary directories for models, logs, and temporary files. These directories will be mounted as volumes into the Docker containers.
+    ```bash
+    mkdir -p backend/model_weights/official_pretrained backend/temp backend/debug_logs
+    ```
+    Your final directory structure for these volumes should look like this:
+    ```bash
+    uformer-hub-service/
+    └── backend/
+        ├── model_weights/     # For storing the downloaded .pth model files
+        ├── temp/              # For storing uploaded/processed images and videos
+        └── debug_logs/        # For storing application logs
+    ```
+3.  **Download Model Weights:**  
+    Download the following 3 `models` and place them inside `backend/model_weights/official_pretrained/`.  
+    Each model is optimized for a specific task based on its training data.
+    
+    | Model / Task                  | File Size | Training Dataset & Best Use Case                                                                                                    | Download Link                                                                                                                              |
+    | ----------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+    | **Denoising (High Quality)**  | 584 MB    | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> Best for general-purpose denoising of sRGB images from digital cameras. | [Uformer_B_SIDD.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/Uformer_B_SIDD.pth?download=true) |
+    | **Denoising (Fast)**          | 61 MB     | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> A lighter version for faster performance, ideal for real-time use.      | [uformer16_denoising_sidd.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/uformer16_denoising_sidd.pth?download=true)                                       |
+    | **Motion Deblurring**         | 584 MB    | **[GoPro](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EqKY3WMkbfVBlzldiEe4IEUBgr6BQx8mkI9jipWoWrwqQg?e=c5aPIe)** <br/> Best for correcting blur caused by camera shake or fast motion.    | [Uformer_B_GoPro.pth](https://huggingface.co/CaveMindLabs/uformer-restoration-models/resolve/main/Uformer_B_GoPro.pth?download=true)      |
+    ---
+    *__Note:__ For more datasets and information, check the original `README.md`, [UFORMER_ORIGINAL_README.md](UFORMER_ORIGINAL_README.md)*.
 
-```bash
-docker-compose up -d
-```
+4.  **Configure Environment:**  
+    Copy the example environment file. The defaults are optimized for on-demand model loading.
+    ```bash
+    cp backend/.env.example backend/.env
+    ```
 
-The application is now running!
+5.  **Run the Application:**  
+    Use Docker Compose to pull the pre-built images and start the services.  
+    Run from the root directory of the project where the `docker-compose.yml` file is located.
+    ```bash
+    docker-compose up -d
+    ```
+
+### Accessing the Application  
+Once the application is running (either via the automated script or manual setup), you can access it at the following URLs:
 *   **Frontend UI:** [http://localhost:3000](http://localhost:3000)
 *   **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+*   **Backend ReDoc:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
-
-## Application Usage
+## Application Usage  
 
 Once the application is running, navigate to [http://localhost:3000](http://localhost:3000).
 
