@@ -1,4 +1,4 @@
-# Uformer FastAPI Hub: A Production-Ready Image & Video Enhancement Service
+# Uformer Hub Service: A Production-Ready Image & Video Enhancement Service
 
 <a href="https://www.youtube.com/watch?v=ncc1vPxfz48">
   <img src="documentation/assets/YT-Thumbnail_uformer-fastapi-hub.png" 
@@ -7,7 +7,9 @@
 
 *Click the image above to watch the full video demonstration on YouTube ([Full Stack AI Project: A Production Uformer Service with FastAPI, Next.js & Docker](https://www.youtube.com/watch?v=ncc1vPxfz48)).*
 
-**Uformer FastAPI Hub** is a complete, containerized, and production-ready toolkit that serves state-of-the-art [Uformer models](https://github.com/ZhendongWang6/Uformer) for image and video restoration. It provides a robust FastAPI backend with a modern Next.js frontend, designed for developers and researchers who need a reliable, resource-aware, and easy-to-deploy solution for low-level vision tasks like denoising and deblurring.
+**Uformer Hub Service** is a complete, containerized, and production-ready toolkit that serves state-of-the-art [Uformer models](https://github.com/ZhendongWang6/Uformer) for image and video restoration. It provides a robust FastAPI backend with a modern Next.js frontend, designed for developers and researchers who need a reliable, resource-aware, and easy-to-deploy solution for low-level vision tasks like denoising and deblurring.
+
+This repository contains the necessary configuration files to run the entire application using pre-built Docker images from Docker Hub.
 
 ---
 
@@ -34,41 +36,38 @@ This project solves these problems by re-engineering the Uformer pipeline into a
     *   **Denoising (High Quality):** `Uformer-B` (584 MB) - The full-sized model for the best denoising results.
     *   **Denoising (Fast):** `Uformer-16` (61 MB) - A smaller, lighter model for faster processing, ideal for real-time applications.
     *   **Motion Deblurring:** `Uformer-B` (584 MB) - The full-sized model trained on the GoPro dataset for motion deblurring.
-*   **🐳 Fully Containerized with Docker:**
-    *   One-command setup with `docker-compose`.
-    *   Stateless container design with volume mounts for models, logs, and temp files.
-    *   Optimized, multi-stage builds for small and secure production images.
+*   **🐳 Fully Containerized with Docker:** One-Command Deployment:** Run the entire stack with a single `docker-compose` command.
 *   **🖥️ Modern Next.js Frontend:** A clean, responsive, and user-friendly interface for all features.
 *   **✅ Advanced Resource Management:**
     *   **On-Demand VRAM Loading:** Models can be loaded into GPU memory on-demand to save resources, with UI controls to unload them.
     *   **Intelligent Cache System:** Automated and manual cache management to clean up temporary files, with protection for files in use.
 *   **📖 Comprehensive API:** A fully documented API allows for easy integration into your own applications.
 
+For more details on the architecture and API, please see the `documentation/` directory.
+
 ---
 
 ## Quick Start (Docker)
 
-This is the recommended method for running the application.
-
 ### Prerequisites
-*   [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-*   For GPU acceleration (highly recommended):
-    *   An NVIDIA GPU
-    *   The [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+*   **NVIDIA GPU:** This application requires an NVIDIA GPU for model inference.
+*   **Docker:** Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
+*   **NVIDIA Container Toolkit:** You must install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to allow Docker to access the GPU.
 
-### 1. Clone the Repository
+### 1. Clone This Repository
 ```bash
-git clone https://github.com/your-username/uformer-fastapi-hub.git
-cd uformer-fastapi-hub
+git clone https://github.com/CaveMindLabs/uformer-hub-service.git
+cd uformer-hub-service
 ```
 
 ### 2. Download Model Weights
-You must download the official pre-trained models and place them in the correct directory. First, create the directory:
+Create the necessary directory and download the official pre-trained models.
+
 ```bash
 # Create the directory for the models
 mkdir -p backend/model_weights/official_pretrained
 ```
-Then, download the following files and place them inside that directory. Each model is optimized for a specific task based on its training data.
+Then, download the following 3 `models` and place them inside `backend/model_weights/official_pretrained/`. Each model is optimized for a specific task based on its training data.
 
 | Model / Task                  | File Size | Training Dataset & Best Use Case                                                                                                    | Download                                                                                                                              |
 | ----------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
