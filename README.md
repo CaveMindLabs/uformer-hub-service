@@ -50,9 +50,10 @@ For more details on the architecture and API, please see the `documentation/` di
 ## Quick Start (Docker)
 
 ### Prerequisites
-*   **NVIDIA GPU:** This application requires an NVIDIA GPU for model inference.
+*   **NVIDIA GPU:** The backend service requires an NVIDIA GPU for PyTorch (CUDA) model inference.
 *   **Docker:** Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/).
 *   **NVIDIA Container Toolkit:** You must install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) to allow Docker to access the GPU.
+*   **Note for macOS Users:** Due to the dependency on NVIDIA CUDA, the backend container cannot be run on macOS. The frontend can be run, but it will not be able to connect to a local backend.
 
 ### 1. Clone This Repository
 ```bash
@@ -60,21 +61,32 @@ git clone https://github.com/CaveMindLabs/uformer-hub-service.git
 cd uformer-hub-service
 ```
 
-### 2. Download Model Weights
-Create the necessary directory and download the official pre-trained models.
+### 2. Create Directories & Download Models
 
+First, create all the necessary directories for models, logs, and temporary files with a single command:
 ```bash
-# Create the directory for the models
-mkdir -p backend/model_weights/official_pretrained
+mkdir -p backend/model_weights/official_pretrained backend/temp backend/debug_logs
 ```
-Then, download the following 3 `models` and place them inside `backend/model_weights/official_pretrained/`. Each model is optimized for a specific task based on its training data.
 
+These directories are mounted as volumes into the Docker containers.
+```bash
+uformer-hub-service/
+└── backend/
+    ├── model_weights/     # For storing the downloaded .pth model files
+    ├── temp/              # For storing uploaded/processed images and videos
+    └── debug_logs/        # For storing application logs
+```
+
+Next, download the following 3 `models` and place them inside the newly created `backend/model_weights/official_pretrained/` directory. Each model is optimized for a specific task based on its training data.
+
+---
 | Model / Task                  | File Size | Training Dataset & Best Use Case                                                                                                    | Download                                                                                                                              |
 | ----------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Denoising (High Quality)**  | 584 MB    | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> Best for general-purpose denoising of sRGB images from digital cameras. | [Uformer_B_SIDD.pth](https://mailustceducn-my.sharepoint.com/:u:/g/personal/zhendongwang_mail_ustc_edu_cn/Ea7hMP82A0xFlOKPlQnBJy0B9gVP-1MJL75mR4QKBMGc2w?e=iOz0zz) |
 | **Denoising (Fast)**          | 61 MB     | **[SIDD](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EtcRYRDGWhBIlQa3EYBp4FYBao7ZZT2dPc5k1Qe-CdPh3A)** <br/> A lighter version for faster performance, ideal for real-time use.      | [uformer16_denoising_sidd.pth](https://www.kaggle.com/datasets/ekojsalim/uformer-weights/data)                                       |
 | **Motion Deblurring**         | 584 MB    | **[GoPro](https://mailustceducn-my.sharepoint.com/:f:/g/personal/zhendongwang_mail_ustc_edu_cn/EqKY3WMkbfVBlzldiEe4IEUBgr6BQx8mkI9jipWoWrwqQg?e=c5aPIe)** <br/> Best for correcting blur caused by camera shake or fast motion.    | [Uformer_B_GoPro.pth](https://mailustceducn-my.sharepoint.com/:u:/g/personal/zhendongwang_mail_ustc_edu_cn/EfCPoTSEKJRAshoE6EAC_3YB7oNkbLUX6AUgWSCwoJe0oA)      |
 
+---
 *__Note:__ Check the original `README.md`, [UFORMER_ORIGINAL_README.md](UFORMER_ORIGINAL_README.md)*, for more datasets
 
 ---
@@ -89,7 +101,7 @@ cp backend/.env.example backend/.env
 Use Docker Compose to build and start all services.
 
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 
 The application is now running!
@@ -113,17 +125,35 @@ The header contains controls for monitoring and managing server resources:
 
 ---
 
-## Project Structure
+## Repository & Runtime Structure
 
-*   `frontend/`: The Next.js frontend application.
-*   `backend/`: The FastAPI backend application.
-    *   `app/`: Core application code, including API endpoints.
-    *   `uformer_model/`: The Uformer model definition and utilities.
-    *   `model_weights/`: Directory where model `.pth` files are stored (mounted via Docker volume).
-    *   `temp/`: Directory for temporary files like uploads and processed results (mounted via Docker volume).
-    *   `debug_logs/`: Directory for persistent application logs (mounted via Docker volume).
-*   `documentation/`: Contains detailed guides for API usage and advanced implementation details.
-*   `docker-compose.yml`: The master file for orchestrating the containerized application.
+This repository provides the configuration needed to run the application. The application's runtime data (models, logs, and processed files) is stored in local directories you create, keeping the service itself stateless.
+
+### Repository Files
+```bash
+uformer-hub-service/
+├── backend/
+│   └── .env.example       # Template for environment variables
+├── documentation/
+│   ├── assets/            # Contains the YouTube thumbnail
+│   ├── API_USAGE_GUIDE.md
+│   └── IMPLEMENTATION_GUIDE.md
+├── .gitignore
+├── docker-compose.yml     # The master file to run the entire application
+├── LICENSE
+├── README.md              # This file
+└── UFORMER_ORIGINAL_README.md
+```
+
+### Runtime Directories (Created by You)
+These directories are mounted as volumes into the Docker containers. You must create them before running the application.
+```bash
+uformer-hub-service/
+└── backend/
+    ├── model_weights/     # For storing the downloaded .pth model files
+    ├── temp/              # For storing processed images and videos
+    └── debug_logs/        # For storing application logs
+```
 
 ---
 
