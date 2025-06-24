@@ -98,7 +98,7 @@ cp backend/.env.example backend/.env
 ```
 
 ### 4. Run the Application
-Use Docker Compose to build and start all services.
+Use Docker Compose to build and start all services. Run from the root directory of the project where the `docker-compose.yml` file is located.
 
 ```bash
 docker-compose up -d
@@ -122,6 +122,39 @@ Once the application is running, navigate to [http://localhost:3000](http://loca
 The header contains controls for monitoring and managing server resources:
 *   **Cache Manager:** View the disk space used by temporary image and video files and clear them. The system will protect files that are still being processed or viewed.
 *   **VRAM Manager:** If on-demand loading is enabled (`LOAD_ALL_MODELS_ON_STARTUP=False` in `.env`), you can see which models are currently loaded in GPU VRAM and unload them to free up memory.
+
+---
+
+## Managing the Application
+
+All commands should be run from the root directory of the project where the `docker-compose.yml` file is located.
+
+*   **To Stop the Application:**
+    The following command will stop and remove the containers and network. Your data in the `model_weights`, `temp`, and `debug_logs` folders will be preserved.
+    ```bash
+    docker-compose down
+    ```
+
+*   **To View Logs:**
+    To see a live stream of logs from all services, use:
+    ```bash
+    docker-compose logs -f
+    ```
+    To view logs for a specific service (e.g., the backend), use:
+    ```bash
+    docker-compose logs -f backend
+    ```
+    To view logs for a another specific service (e.g., the frontend), use:
+    ```bash
+    docker-compose logs -f frontend
+    ```
+    Press `Ctrl+C` to stop viewing the logs.
+
+*   **To Check Service Status:**
+    To see the current status of the running containers:
+    ```bash
+    docker-compose ps
+    ```
 
 ---
 
