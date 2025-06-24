@@ -1,0 +1,32 @@
+# docker-compose.yml (Public Version)
+services:
+  backend:
+    # 'image' replaces the 'build' block. It tells Docker to pull from the registry.
+    image: gildasz/uformer-backend:latest
+    container_name: uformer-fastapi-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/temp:/app/temp
+      - ./backend/debug_logs:/app/debug_logs
+      - ./backend/model_weights:/app/model_weights
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  frontend:
+    # 'image' also replaces the 'build' block here.
+    image: gildasz/uformer-frontend:latest
+    container_name: uformer-nextjs-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
