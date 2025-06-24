@@ -125,38 +125,6 @@ The header contains controls for monitoring and managing server resources:
 
 ---
 
-## Repository & Runtime Structure
-
-This repository provides the configuration needed to run the application. The application's runtime data (models, logs, and processed files) is stored in local directories you create, keeping the service itself stateless.
-
-### Repository Files
-```bash
-uformer-hub-service/
-├── backend/
-│   └── .env.example       # Template for environment variables
-├── documentation/
-│   ├── assets/            # Contains the YouTube thumbnail
-│   ├── API_USAGE_GUIDE.md
-│   └── IMPLEMENTATION_GUIDE.md
-├── .gitignore
-├── docker-compose.yml     # The master file to run the entire application
-├── LICENSE
-├── README.md              # This file
-└── UFORMER_ORIGINAL_README.md
-```
-
-### Runtime Directories (Created by You)
-These directories are mounted as volumes into the Docker containers. You must create them before running the application.
-```bash
-uformer-hub-service/
-└── backend/
-    ├── model_weights/     # For storing the downloaded .pth model files
-    ├── temp/              # For storing processed images and videos
-    └── debug_logs/        # For storing application logs
-```
-
----
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
